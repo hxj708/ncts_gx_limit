@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.auth.mapper.ResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.auth.entity.Resource">
+        <result column="ID" property="id" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="VERSION" property="version" />
+        <result column="MODULE_CODE" property="moduleCode" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="NAME" property="name" />
+        <result column="CODE" property="code" />
+        <result column="TYPE" property="type" />
+        <result column="VALUE" property="value" />
+        <result column="ICON" property="icon" />
+        <result column="IS_SHOW" property="isShow" />
+        <result column="TRAIN" property="train" />
+        <result column="RULE" property="rule" />
+        <result column="NOTE" property="note" />
+        <result column="TARGET" property="target" />
+        <result column="meta" property="meta" />
+        <result column="component" property="component" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+    id,create_user,create_time,update_user,update_time,is_deleted,version,
+        module_code, parent_id, name, code, type, value, icon, is_show, train, rule, note, target, meta, component
+    </sql>
+
+    <sql id="BaseSelectSql">
+        select
+        t.id,t.create_user,t.create_time,t.update_user,t.update_time,t.is_deleted,t.version
+        ,t.module_code,t.parent_id,t.name,t.code,t.type,t.value,t.icon,t.is_show,t.train,t.rule,t.note,t.target, t.meta, t.component
+        from ipanther_resource t
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.IS_DELETED = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.IS_DELETED = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.ID in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.moduleCode != null and cm.moduleCode != ''">
+                and t.MODULE_CODE = #{cm.moduleCode}
+            </if>
+            <if test="cm.parentId != null and cm.parentId != ''">
+                <choose>
+                    <when test="cm.parentId == 'NULL_OBJECT'">
+                        and t.PARENT_ID is null
+                    </when>
+                    <otherwise>
+                        and t.PARENT_ID = #{cm.parentId}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="cm.name != null and cm.name != ''">
+                and t.NAME = #{cm.name}
+            </if>
+            <if test="cm.code != null and cm.code != ''">
+                and t.CODE = #{cm.code}
+            </if>
+            <if test="cm.type != null and cm.type != ''">
+                and t.TYPE = #{cm.type}
+            </if>
+            <if test="cm.value != null and cm.value != ''">
+                and t.VALUE = #{cm.value}
+            </if>
+            <if test="cm.icon != null and cm.icon != ''">
+                and t.ICON = #{cm.icon}
+            </if>
+            <if test="cm.isShow != null and cm.isShow != ''">
+                and t.is_show = #{cm.isShow}
+            </if>
+            <if test="cm.train != null and cm.train != ''">
+                and t.TRAIN = #{cm.train}
+            </if>
+            <if test="cm.rule != null and cm.rule != ''">
+                and t.RULE = #{cm.rule}
+            </if>
+            <if test="cm.note != null and cm.note != ''">
+                and t.NOTE = #{cm.note}
+            </if>
+            <if test="cm.target != null and cm.target != ''">
+                and t.TARGET = #{cm.target}
+            </if>
+            <if test="cm.userId !=null and cm.userId!=''">
+                and t.id in (select rr.resource_id from IPANTHER_USER_ROLE ru join IPANTHER_ROLE_RESOURCE rr on ru.role_id=rr.role_id where ru.user_id=#{cm.userId,jdbcType=VARCHAR})
+            </if>
+            <if test="cm.roleId !=null and cm.roleId!=''">
+                and t.id in (select rr.RESOURCE_ID from IPANTHER_ROLE_RESOURCE rr where rr.IS_DELETED='N' and rr.ROLE_ID=#{cm.roleId,jdbcType=VARCHAR})
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询单条记录，用于灵活编写复杂SQL, 如子查询、关联查询等，如果是模块简单只需要单表，则调用mybatis plus自带的selectById -->
+    <select id="selectByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <!--<select id="selectByMap" resultMap="BaseResultMap" databaseId="oracle">
+        select
+        t.id,t.create_user,t.create_time,t.update_user,t.update_time,t.is_deleted,t.version
+        ,t.module_code,t.parent_id,t.name,t.code,t.type,t.value,t.icon,t.is_show,t.train,t.rule,t.note,t.target
+        , res.role_ids, res.role_names, res.role_codes
+        from IPANTHER_RESOURCE t
+            left join (select rr.resource_id resource_id,
+                            wm_concat(to_char(rr.role_id)) role_ids, wm_concat(to_char(r.name)) role_names , wm_concat(to_char(r.code)) role_codes
+                        from IPANTHER_ROLE_RESOURCE rr
+                            join IPANTHER_ROLE r on rr.role_id=r.id and r.is_deleted='N'
+                        group by rr.resource_id) res on res.resource_id=t.id
+        where t.IS_DELETED = 'N'
+        <include refid="BaseWhereSql" />
+        order by t.train,t.NAME ,t.id
+    </select>-->
+
+    <select id="selectByMap" resultMap="BaseResultMap" databaseId="mysql">
+        select
+            t.id,t.create_user,t.create_time,t.update_user,t.update_time,t.is_deleted,t.version
+            ,t.module_code,t.parent_id,t.name,t.code,t.type,t.value,t.icon,t.is_show,t.train,t.rule,t.note,t.target, t.meta, t.component
+            , res.role_ids, res.role_names, res.role_codes
+        from IPANTHER_RESOURCE t
+            left join (select rr.resource_id resource_id,
+                            group_concat((rr.role_id)) role_ids, group_concat((r.name)) role_names , group_concat((r.code)) role_codes
+                            from IPANTHER_ROLE_RESOURCE rr
+                            join IPANTHER_ROLE r on rr.role_id=r.id and r.is_deleted='N'
+                            group by rr.resource_id) res on res.resource_id=t.id
+        <include refid="BaseWhereSql" />
+        order by t.train,t.NAME ,t.id
+    </select>
+
+    <select id="selectByMap1" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select t.ID, t.CREATE_TIME, t.CREATE_USER, t.UPDATE_TIME, t.UPDATE_USER, t.IS_DELETED,
+    t.VERSION, t.MODULE_CODE, t.PARENT_ID, t.NAME, t.VALUE, t.ICON, t.SHOW, t.TRAIN,
+    t.RULE, t.NOTE, t.TARGET, t.meta
+        <!--, res.role_ids, res.role_names, res.role_codes-->
+    from IPANTHER_RESOURCE t
+    <!--	left join (select rr.resource_id resource_id,
+                        wm_concat(to_char(rr.role_id)) role_ids, wm_concat(to_char(r.name)) role_names , wm_concat(to_char(r.code)) role_codes
+    				from IPANTHER_ROLE_RESOURCE rr
+    					join IPANTHER_ROLE r on rr.role_id=r.id and r.is_deleted='N'
+    				group by rr.resource_id) res on res.resource_id=t.id-->
+    where t.IS_DELETED = 'N'
+        <if test="moduleCode != null and moduleCode != ''">
+            and t.MODULE_CODE = #{moduleCode,jdbcType=VARCHAR}
+        </if>
+        <if test="parentId != null and parentId != ''">
+            and t.PARENT_ID = #{parentId,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null and name != ''">
+            and t.NAME = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="userId !=null and userId!=''">
+            and t.id in (select rr.resource_id from IPANTHER_USER_ROLE ru join IPANTHER_ROLE_RESOURCE rr on ru.role_id=rr.role_id where ru.user_id=#{userId,jdbcType=VARCHAR})
+        </if>
+        <if test="roleId !=null and roleId!=''">
+            and t.id in (select rr.RESOURCE_ID from IPANTHER_ROLE_RESOURCE rr where rr.IS_DELETED='N' and rr.ROLE_ID=#{roleId,jdbcType=VARCHAR})
+        </if>
+        <if test="value != null and value != ''">
+            and t.VALUE = #{value,jdbcType=VARCHAR}
+        </if>
+        <if test="icon != null and icon != ''">
+            and t.ICON = #{icon,jdbcType=VARCHAR}
+        </if>
+        <if test="show != null and show != ''">
+            and t.SHOW = #{show,jdbcType=VARCHAR}
+        </if>
+        <if test="train != null and train != ''">
+            and t.TRAIN = #{train,jdbcType=FLOAT}
+        </if>
+        <if test="rule != null and rule != ''">
+            and t.RULE = #{rule,jdbcType=VARCHAR}
+        </if>
+        <if test="note != null and note != ''">
+            and t.NOTE = #{note,jdbcType=VARCHAR}
+        </if>
+        <if test="target != null and target != ''">
+            and t.TARGET = #{target,jdbcType=VARCHAR}
+        </if>
+    order by t.train,t.NAME ,t.id
+    </select>
+</mapper>

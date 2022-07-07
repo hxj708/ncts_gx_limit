@@ -1,0 +1,101 @@
+# 测试环境
+server:
+  port: 7050
+  main: http://haoyuwork.f3322.net:7050/server
+  maxHttpHeaderSize: 81920
+  servlet:
+    session:
+      cookie:
+        domain:
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.0.3:3308/national-train?autoReconnect=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: haoyu
+    password: password
+    druid:
+      # 初始连接数
+      initialSize: 1
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username: haoyu
+        login-password: 888888
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+  redis:
+    host: 192.168.0.3
+    port: 6379
+    database: 10
+    password: haoyu
+    timeout: 10000
+file:
+  temp-dir: /opt/AppData/fileDatas/ncts/tempFiles/
+  remote-dir: /opt/AppData/fileDatas/ncts/remoteFiles/
+  remote-http-domain: http://haoyuwork.f3322.net:7002/
+  forbid-suffix: jsp,php,exe,asp
+jwt:
+  config:
+    key: RTpcZWNsaXBzZVx3b3Jrc3BhY2VcdGVhY2hlci1kZXZlbG9wbWVudC1jZW50ZXJcdGRjLXdlYi1zZXJ2ZXJcdGRjLXdlYi1zZXJ2ZXItamlhbmdtZW58fEU6XGVjbGlwc2Vcd29ya3NwYWNlXHRlYWNoZXItZGV2ZWxvcG1lbnQtY2VudGVyXHRkYy13ZWItc2VydmVyXHRkYy13ZWItc2VydmVyLWppYW5nbWVu
+    # 一般过期时间，间隔刷新时间，长期过期时间，单位秒
+    expire: 600000
+    refresh: 10
+    remember: 604800
+    concurrency-count: -1
+
+other:
+  outSideCityDeptId: outSideCityDeptId
+
+
+swagger2:
+  enable: true
+
+ffmpeg:
+  home-path: D:\ffmpeg\bin\ffmpeg.exe
+
+loginUser:
+  default:
+    department:
+      cityCode: 440700
+
+domain:
+#  courselib: http://127.0.0.1:8380/
+  courselib: http://192.168.0.8:7013/
+
+
+s3:
+  endpoint: http://192.168.0.8:9000
+  accessKey: haoyu
+  secretKey: abc123890
+  bucketName: nea

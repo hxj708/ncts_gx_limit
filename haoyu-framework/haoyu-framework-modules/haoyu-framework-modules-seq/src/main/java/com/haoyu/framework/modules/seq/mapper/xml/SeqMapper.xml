@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haoyu.framework.modules.seq.mapper.SeqMapper" >
+  <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.seq.entity.Seq" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="SEQ_NAME" property="seqName" jdbcType="VARCHAR" />
+    <result column="SEQ_CODE" property="seqCode" jdbcType="VARCHAR" />
+    <result column="CURRENT_NUM" property="currentNum" jdbcType="DECIMAL" />
+    <result column="NEXT_NUM" property="nextNum" jdbcType="DECIMAL" />
+    <result column="STEP_NUM" property="stepNum" jdbcType="DECIMAL" />
+    <result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="IS_DELETED" property="isDeleted" jdbcType="CHAR" />
+    <result column="VERSION" property="version" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, SEQ_NAME, SEQ_CODE, CURRENT_NUM, NEXT_NUM, STEP_NUM, CREATE_USER, CREATE_TIME, UPDATE_USER,
+    UPDATE_TIME, IS_DELETED, VERSION
+  </sql>
+  <select id="selectBySeqCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from IPANTHER_SEQ
+    where SEQ_CODE = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateByPrimaryKeyAndNumSelective" parameterType="com.haoyu.framework.modules.seq.entity.Seq" >
+    update IPANTHER_SEQ
+    <set >
+      <if test="seqName != null" >
+        SEQ_NAME = #{seqName,jdbcType=VARCHAR},
+      </if>
+      <if test="seqCode != null" >
+        SEQ_CODE = #{seqCode,jdbcType=VARCHAR},
+      </if>
+      <if test="currentNum != null" >
+        CURRENT_NUM = #{currentNum,jdbcType=DECIMAL},
+      </if>
+      <if test="nextNum != null" >
+        NEXT_NUM = #{nextNum,jdbcType=DECIMAL},
+      </if>
+      <if test="stepNum != null" >
+        STEP_NUM = #{stepNum,jdbcType=DECIMAL},
+      </if>
+      <if test="createUser != null" >
+        CREATE_USER = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null" >
+        IS_DELETED = #{isDeleted,jdbcType=CHAR},
+      </if>
+        VERSION = VERSION+1
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+      AND NEXT_NUM = #{currentNum,jdbcType=DECIMAL}
+      AND VERSION = #{version,jdbcType=DECIMAL}
+  </update>
+</mapper>

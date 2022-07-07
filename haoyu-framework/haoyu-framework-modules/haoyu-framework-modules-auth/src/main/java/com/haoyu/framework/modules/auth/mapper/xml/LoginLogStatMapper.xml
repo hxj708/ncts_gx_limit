@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.auth.mapper.LoginLogStatMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.auth.entity.LoginLogStat">
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="VERSION" property="version" />
+        <result column="ID" property="id" />
+        <result column="USER_ID" property="userId" />
+        <result column="IP_ADDRESS" property="ipAddress" />
+        <result column="OS" property="os" />
+        <result column="COUNTS" property="counts" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        CREATE_TIME,
+        UPDATE_TIME,
+        CREATE_USER,
+        UPDATE_USER,
+        IS_DELETED,
+        VERSION,
+        ID,
+        USER_ID, IP_ADDRESS, OS, COUNTS
+    </sql>
+
+
+    <sql id="BaseSelectSql">
+        select
+        t.CREATE_TIME,t.UPDATE_TIME,t.CREATE_USER,t.UPDATE_USER,t.IS_DELETED,t.VERSION,t.ID
+        ,t.USER_ID,t.IP_ADDRESS,t.OS,t.COUNTS
+        from ipanther_login_log_stat t
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.IS_DELETED = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.IS_DELETED = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.ID in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.userId != null and cm.userId != ''">
+                and t.USER_ID = #{cm.userId}
+            </if>
+            <if test="cm.ipAddress != null and cm.ipAddress != ''">
+                and t.IP_ADDRESS = #{cm.ipAddress}
+            </if>
+            <if test="cm.os != null and cm.os != ''">
+                and t.OS = #{cm.os}
+            </if>
+            <if test="cm.counts != null and cm.counts != ''">
+                and t.COUNTS = #{cm.counts}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询单条记录，用于灵活编写复杂SQL, 如子查询、关联查询等，如果是模块简单只需要单表，则调用mybatis plus自带的selectById -->
+    <select id="selectByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        <include refid="BaseSelectSql" />
+        <include refid="BaseWhereSql" />
+    </select>
+
+    <update id="updateStat" parameterType="com.haoyu.framework.modules.auth.entity.LoginLogStat">
+    update IPANTHER_LOGIN_LOG_STAT
+    set USER_ID = #{userId,jdbcType=VARCHAR},
+        <if test="ipAddress != null">
+            IP_ADDRESS = #{ipAddress,jdbcType=VARCHAR},
+        </if>
+        <if test="os != null">
+            OS = #{os,jdbcType=VARCHAR},
+        </if>
+        COUNTS = COUNTS + 1,
+        UPDATE_USER = #{updateUser,jdbcType=VARCHAR},
+        VERSION = VERSION + 1
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

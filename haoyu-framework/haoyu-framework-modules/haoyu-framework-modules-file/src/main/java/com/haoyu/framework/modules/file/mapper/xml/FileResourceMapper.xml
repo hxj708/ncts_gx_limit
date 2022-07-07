@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.file.mapper.FileResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.file.entity.FileResource">
+        <result column="ID" property="id" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="VERSION" property="version" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="NAME" property="name" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="IS_FOLDER" property="isFolder" />
+        <result column="FILE_COUNT" property="fileCount" />
+        <result column="FILE_INFO_ID" property="fileInfoId" />
+        <result column="TYPE" property="type" />
+        <result column="PARENT_IDS" property="parentIds" />
+        <result column="REAL_NAME" property="realName" />
+        <result column="IS_SHOW" property="isShow" />
+
+        <result column="relation_id" property="relation.id" />
+        <result column="FILE_ID" property="relation.fileId" />
+        <result column="RELATION_ID" property="relation.relationId" />
+        <result column="TYPE" property="relation.type" />
+        <result column="DOWNLOAD_NUM" property="relation.downloadNum" />
+
+
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID,
+        UPDATE_USER,
+        UPDATE_TIME,
+        IS_DELETED,
+        VERSION,
+        CREATE_USER,
+        CREATE_TIME,
+        NAME, PARENT_ID, IS_FOLDER, FILE_COUNT, FILE_INFO_ID, TYPE, PARENT_IDS,IS_SHOW
+    </sql>
+
+
+    <sql id="BaseSelectSql">
+        select
+        t.ID,t.UPDATE_USER,t.UPDATE_TIME,t.IS_DELETED,t.VERSION,t.CREATE_USER,t.CREATE_TIME
+        ,t.NAME,t.PARENT_ID,t.IS_FOLDER,t.FILE_COUNT,t.FILE_INFO_ID,t.TYPE,t.PARENT_IDS,t.IS_SHOW
+        <if test="cm.joinUser != null and cm.joinUser =='Y'.toString()">
+            ,iu.REAL_NAME
+        </if>
+        <if test="cm.joinFileRelation != null and cm.joinFileRelation =='Y'.toString()">
+            ,fr.ID as relation_id,fr.FILE_ID,fr.RELATION_ID,fr.TYPE
+            ,(SELECT DOWNLOAD_NUM FROM `file_relation` WHERE relation_id = t.id AND TYPE = 'fileRelation' AND is_deleted = 'N' limit 1) DOWNLOAD_NUM
+        </if>
+        from file_resource t
+
+        <if test="cm.joinUser != null and cm.joinUser == 'Y'.toString()">
+            join ipanther_user iu on iu.id = t.CREATE_USER and iu.IS_DELETED = 'N'
+        </if>
+
+        <if test="cm.joinFileRelation != null and cm.joinFileRelation =='Y'.toString()">
+            join file_relation fr on t.id = fr.FILE_ID and fr.IS_DELETED = 'N'
+        </if>
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.IS_DELETED = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.IS_DELETED = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.ID in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.name != null and cm.name != ''">
+                and t.NAME = #{cm.name}
+            </if>
+            <if test="cm.parentId != null and cm.parentId != '' and cm.parentId != 'isNull'.toString()">
+                and t.PARENT_ID = #{cm.parentId}
+            </if>
+            <if test="cm.parentId != null and cm.parentId == 'isNull'.toString()">
+                and (t.PARENT_ID is null or t.PARENT_ID = '')
+            </if>
+            <if test="cm.isFolder != null and cm.isFolder != ''">
+                and t.IS_FOLDER = #{cm.isFolder}
+            </if>
+            <if test="cm.fileCount != null and cm.fileCount != ''">
+                and t.FILE_COUNT = #{cm.fileCount}
+            </if>
+            <if test="cm.fileInfoId != null and cm.fileInfoId != ''">
+                and t.FILE_INFO_ID = #{cm.fileInfoId}
+            </if>
+            <if test="cm.type != null and cm.type != ''">
+                and t.TYPE = #{cm.type}
+            </if>
+            <if test="cm.parentIds != null and cm.parentIds != ''">
+                and t.PARENT_IDS like concat('%',concat( #{cm.parentIds},'%'))
+            </if>
+            <if test="cm.createUser != null and cm.createUser != ''">
+                and t.CREATE_USER = #{cm.createUser}
+            </if>
+            <if test="cm.isShow != null and cm.isShow != ''">
+                and
+                (
+                    t.IS_SHOW = #{cm.isShow}
+                    <if test="cm.isShow == 'Y'.toString and cm.loginUserId != null and cm.loginUserId != ''">
+                        <!-- 把自己的不可见也带上 -->
+                        or t.CREATE_USER = #{cm.loginUserId}
+                    </if>
+                )
+            </if>
+            <if test="cm.joinFileRelation != null and cm.joinFileRelation =='Y'.toString()">
+                <if test="cm.relationId != null and cm.relationId != ''">
+                    and fr.RELATION_ID = #{cm.relationId}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="getByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        <include refid="BaseSelectSql" />
+        <include refid="BaseWhereSql" />
+    </select>
+
+    <update id="updateFileNum">
+        update file_resource
+        <if test="cm.isIncrease != null and cm.isIncrease == 'Y'.toString()">
+            set FILE_COUNT = FILE_COUNT + #{cm.num}
+        </if>
+        <if  test="cm.isIncrease != null and cm.isIncrease == 'N'.toString()">
+            set FILE_COUNT = FILE_COUNT - #{cm.num}
+        </if>
+        where id in
+          <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

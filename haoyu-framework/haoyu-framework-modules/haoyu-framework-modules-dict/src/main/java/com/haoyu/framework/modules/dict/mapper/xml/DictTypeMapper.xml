@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.dict.mapper.DictTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.dict.entity.DictType">
+        <result column="ID" property="id" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="VERSION" property="version" />
+        <result column="DICT_TYPE_CODE" property="dictTypeCode" />
+        <result column="DICT_TYPE_NAME" property="dictTypeName" />
+        <result column="RANK" property="rank" />
+        <result column="PARENT_CODE" property="parentCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID,
+        CREATE_USER,
+        CREATE_TIME,
+        UPDATE_USER,
+        UPDATE_TIME,
+        IS_DELETED,
+        VERSION,
+        DICT_TYPE_CODE, DICT_TYPE_NAME, RANK, PARENT_CODE
+    </sql>
+
+
+    <sql id="BaseSelectSql">
+        select
+        t.ID,t.CREATE_USER,t.CREATE_TIME,t.UPDATE_USER,t.UPDATE_TIME,t.IS_DELETED,t.VERSION
+        ,t.DICT_TYPE_CODE,t.DICT_TYPE_NAME,t.RANK,t.PARENT_CODE
+        from ipanther_dict_type t
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.IS_DELETED = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.IS_DELETED = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.ID in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.dictTypeCode != null and cm.dictTypeCode != ''">
+                and t.DICT_TYPE_CODE = #{cm.dictTypeCode}
+            </if>
+            <if test="cm.dictTypeName != null and cm.dictTypeName != ''">
+                and t.DICT_TYPE_NAME = #{cm.dictTypeName}
+            </if>
+            <if test="cm.rank != null and cm.rank != ''">
+                and t.RANK = #{cm.rank}
+            </if>
+            <if test="cm.parentCode != null and cm.parentCode != ''">
+                and t.PARENT_CODE = #{cm.parentCode}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询单条记录，用于灵活编写复杂SQL, 如子查询、关联查询等，如果是模块简单只需要单表，则调用mybatis plus自带的selectById -->
+    <select id="selectByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        <include refid="BaseSelectSql" />
+        <include refid="BaseWhereSql" />
+    </select>
+</mapper>

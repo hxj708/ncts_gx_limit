@@ -1,0 +1,47 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+#    context-path: /demo
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  datasource:
+    druid:
+      driver: com.p6spy.engine.spy.P6SpyDriver
+      url: jdbc:p6spy:mysql://192.168.0.3:3308/dev_center
+      username: haoyu
+      password: password
+  redis:
+    host: 192.168.0.3
+    port: 6379
+    database: 2
+    password:
+    timeout: 10000
+mybatis-plus:
+  mapper-locations: classpath*:com/haoyu/**/mapper/xml/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: flag
+      logic-delete-value: Y
+      logic-not-delete-value: N
+jwt:
+  config:
+    key: xkcoding
+    ttl: 600000
+    remember: 604800000
+custom:
+  config:
+    ignores:
+      # 需要过滤的 post 请求
+      post:
+        - "/api/auth/login"
+        - "/api/auth/logout"
+      # 需要过滤的请求，不限方法
+      pattern:
+        - "/test/*"
+logging:
+  config: classpath:log4j2.xml

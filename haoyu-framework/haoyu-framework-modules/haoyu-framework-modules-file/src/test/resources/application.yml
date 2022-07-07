@@ -1,0 +1,32 @@
+server:
+  port: 1001
+spring:
+  datasource:
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://192.168.0.3:3308/dev_center
+    username: haoyu
+    password: password
+  redis:
+    host: 192.168.0.3
+    port: 6379
+    database: 2
+    password:
+    timeout: 10000
+mybatis-plus:
+  mapper-locations: classpath*:com/haoyu/**/mapper/xml/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: flag
+      logic-delete-value: Y
+      logic-not-delete-value: N
+logging:
+  config: classpath:log4j2.xml
+file:
+  temp-dir: F:/tempFiles/
+  remote-dir: F:/remoteFiles/
+  remote-http-domain: http://file.server.com:8780/
+  forbid-suffix: jsp,php,exe,asp
+
+
+
+

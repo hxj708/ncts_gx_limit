@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.file.mapper.FileChangeDecoderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.file.entity.FileChangeDecoder">
+        <result column="ID" property="id" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="VERSION" property="version" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="FILE_ID" property="fileId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+    id,create_user,create_time,update_user,update_time,version,is_deleted,
+        file_id
+    </sql>
+
+    <sql id="BaseSelectSql">
+        select
+        t.id,t.create_user,t.create_time,t.update_user,t.update_time,t.version,t.is_deleted
+        ,t.file_id
+        from file_change_decoder t
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.is_deleted = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.is_deleted = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.id in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.fileId != null and cm.fileId != ''">
+                and t.file_id = #{cm.fileId}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询单条记录，用于灵活编写复杂SQL, 如子查询、关联查询等，如果是模块简单只需要单表，则调用mybatis plus自带的selectById -->
+    <select id="selectByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        <include refid="BaseSelectSql" />
+        <include refid="BaseWhereSql" />
+    </select>
+</mapper>

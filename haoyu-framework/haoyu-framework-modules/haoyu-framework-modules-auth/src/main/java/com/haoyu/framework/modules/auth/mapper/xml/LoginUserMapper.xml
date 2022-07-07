@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.auth.mapper.LoginUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.auth.entity.LoginUser">
+        <result column="ID" property="id" />
+        <result column="create_user" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="version" property="version" />
+        <result column="USER_NAME" property="userName" />
+        <result column="PASSWORD" property="password" />
+        <result column="ROLE_CODE" property="roleCode" />
+        <result column="USER_ROLE" property="userRole" />
+        <result column="PAPERWORK_NO" property="paperworkNo" />
+        <result column="REAL_NAME" property="realName" />
+        <result column="SEX" property="sex" />
+        <result column="POST_TYPE" property="postType" />
+        <result column="SUBJECT" property="subject" />
+        <result column="STAGE" property="stage" />
+        <result column="DEPT_ID" property="deptId" />
+        <result column="DEPT_NAME" property="deptName" />
+        <result column="DEPT_LEVEL" property="deptLevel" />
+        <result column="DEPT_TYPE" property="deptType" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="PROVINCE" property="province" />
+        <result column="TEACHER_TITLE" property="teacherTitle" />
+        <result column="CITY" property="city" />
+        <result column="COUNTIES" property="counties" />
+        <result column="AVATAR" property="avatar" />
+        <result column="PASSWORD_PLAIN" property="passwordPlain" />
+        <result column="TRAIN_RANGE" property="trainRange" />
+        <result column="MOBILE_PHONE" property="mobilePhone" />
+        <result column="EMAIL" property="email" />
+        <result column="PARENT_DEPT_ID" property="parentDeptId" />
+        <result column="MAIN_DEPT_ID" property="mainDeptId" />
+        <result column="WECHAT_ID" property="wechatId" />
+        <result column="WECHAT_NICKNAME" property="wechatNickname" />
+        <result column="GDHR_PAPERWORK_NO" property="gdhrPaperworkNo" />
+        <result column="DEPT_TYPE_SEQ" property="deptTypeSeq" />
+        <result column="is_lock" property="isLock" />
+        <result column="do_survey" property="doSurvey" />
+    </resultMap>
+
+    <resultMap id="LoginUser" type="com.haoyu.framework.modules.auth.entity.LoginUser">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR"/>
+        <!--  <result column="PASSWORD" property="password" jdbcType="VARCHAR" /> -->
+        <result column="PASSWORD_PLAIN" property="passwordPlain" jdbcType="VARCHAR"/>
+        <result column="ROLE_CODE" property="roleCode" jdbcType="DECIMAL"/>
+        <result column="USER_ROLE" property="userRole" jdbcType="VARCHAR"/>
+        <result column="REAL_NAME" property="realName" jdbcType="VARCHAR"/>
+        <result column="AVATAR" property="avatar" jdbcType="VARCHAR"/>
+        <result column="PAPERWORK_NO" property="paperworkNo" jdbcType="VARCHAR"/>
+        <result column="REAL_NAME" property="realName" jdbcType="VARCHAR"/>
+        <result column="DEPT_ID" property="deptId" jdbcType="VARCHAR"/>
+        <result column="DEPT_NAME" property="deptName" jdbcType="VARCHAR"/>
+        <result column="DEPT_LEVEL" property="deptLevel" jdbcType="DECIMAL"/>
+        <result column="DEPT_TYPE" property="deptType" jdbcType="VARCHAR"/>
+        <result column="PARENT_ID" property="parentDeptId" jdbcType="VARCHAR"/>
+        <result column="PROVINCE" property="province" jdbcType="VARCHAR"/>
+        <result column="CITY" property="city" jdbcType="VARCHAR"/>
+        <result column="COUNTIES" property="counties" jdbcType="VARCHAR"/>
+        <result column="TRAIN_RANGE" property="trainRange" jdbcType="VARCHAR"/>
+        <result column="WECHAT_ID" property="wechatId" jdbcType="VARCHAR"/>
+        <result column="WECHAT_NICKNAME" property="wechatNickname" jdbcType="VARCHAR"/>
+        <result column="GDHR_PAPERWORK_NO" property="gdhrPaperworkNo" jdbcType="VARCHAR"/>
+        <result column="DEPT_TYPE_SEQ" property="deptTypeSeq" jdbcType="VARCHAR"/>
+        <result column="IS_LOCK" property="isLock" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap type="java.util.Map" id="AuditCountResult">
+        <result column="PROJECT_COUNT" property="projectCount" jdbcType="DECIMAL"/>
+        <result column="COURSE_COUNT" property="courseCount" jdbcType="DECIMAL"/>
+        <result column="TRAIN_COUNT" property="trainCount" jdbcType="DECIMAL"/>
+        <result column="TRAIN_HOURS_COUNT" property="trainHoursCount" jdbcType="DECIMAL"/>
+        <result column="TECH_PROJECT_COUNT" property="techProjectCount" jdbcType="DECIMAL"/>
+        <result column="REMOTE_COURSE_COUNT" property="remoteCourseCount" jdbcType="DECIMAL"/>
+        <result column="TECH_TRAIN_COUNT" property="techTrainCount" jdbcType="DECIMAL"/>
+        <result column="TECH_TRAIN_HOURS_COUNT" property="techTrainHoursCount" jdbcType="DECIMAL"/>
+        <result column="RECORD_TRAIN_COUNT" property="recordTrainCount" jdbcType="DECIMAL"/>
+        <result column="PROJECT_COUNT_TECH" property="projectCountTech" jdbcType="DECIMAL"/>
+        <result column="COURSE_COUNT_TECH" property="courseCountTech" jdbcType="DECIMAL"/>
+        <result column="TRAIN_COUNT_TECH" property="trainCountTech" jdbcType="DECIMAL"/>
+        <result column="TRAIN_HOURS_COUNT_TECH" property="trainHoursCountTech" jdbcType="DECIMAL"/>
+    </resultMap>
+    <resultMap type="java.util.Map" id="Transfer">
+        <result column="OUT_DEPT" property="outDept" jdbcType="VARCHAR"/>
+        <result column="IN_DEPT" property="inDept" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID,
+        create_user,
+        CREATE_TIME,
+        update_user,
+        update_time,
+        is_deleted,
+        version,
+        USER_NAME, PASSWORD, ROLE_CODE, USER_ROLE, PAPERWORK_NO, REAL_NAME, SEX, DEPT_ID, DEPT_NAME, DEPT_LEVEL, DEPT_TYPE, PARENT_ID, PROVINCE, CITY, COUNTIES, AVATAR, PASSWORD_PLAIN, TRAIN_RANGE, MOBILE_PHONE, EMAIL, PARENT_DEPT_ID, MAIN_DEPT_ID, WECHAT_ID, WECHAT_NICKNAME, GDHR_PAPERWORK_NO, DEPT_TYPE_SEQ, is_lock
+    </sql>
+
+
+    <sql id="BaseSelectSql">
+        select
+        t.ID,t.CREATE_USER,t.CREATE_TIME,t.UPDATE_USER,t.UPDATE_TIME,t.IS_DELETED,t.VERSION,t.TEACHER_TITLE,t.POST_TYPE,t.BORN_DATE
+        ,t.USER_NAME,t.PASSWORD,t.ROLE_CODE,t.USER_ROLE,t.PAPERWORK_NO,t.REAL_NAME,t.SEX,t.SUBJECT,t.STAGE,t.DEPT_ID,t.DEPT_NAME,t.DEPT_LEVEL,t.DEPT_TYPE,t.PARENT_ID,t.PROVINCE,t.CITY,t.COUNTIES,t.AVATAR
+        ,t.PASSWORD_PLAIN,t.TRAIN_RANGE,t.MOBILE_PHONE,t.EMAIL,t.PARENT_DEPT_ID,t.MAIN_DEPT_ID,t.WECHAT_ID,t.WECHAT_NICKNAME,t.GDHR_PAPERWORK_NO,t.DEPT_TYPE_SEQ,t.IS_LOCK
+        from userview t
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.IS_DELETED = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.IS_DELETED = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.ID in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.id != null and cm.id != ''">
+                and t.ID = #{cm.id}
+            </if>
+            <if test="cm.userName != null and cm.userName != ''">
+                and t.USER_NAME = #{cm.userName}
+            </if>
+            <if test="cm.password != null and cm.password != ''">
+                and t.PASSWORD = #{cm.password}
+            </if>
+            <if test="cm.roleCode != null and cm.roleCode != ''">
+                and t.ROLE_CODE = #{cm.roleCode}
+            </if>
+            <if test="cm.userRole != null and cm.userRole != ''">
+                and t.USER_ROLE = #{cm.userRole}
+            </if>
+            <if test="cm.paperworkNo != null and cm.paperworkNo != ''">
+                and t.PAPERWORK_NO = #{cm.paperworkNo}
+            </if>
+            <if test="cm.realName != null and cm.realName != ''">
+                and t.real_name like concat('%',concat(#{cm.realName,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="cm.sex != null and cm.sex != ''">
+                and t.SEX = #{cm.sex}
+            </if>
+            <if test="cm.deptId != null and cm.deptId != ''">
+                and t.DEPT_ID = #{cm.deptId}
+            </if>
+            <if test="cm.deptName != null and cm.deptName != ''">
+                and t.DEPT_NAME like concat('%',concat(#{cm.deptName,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="cm.deptLevel != null and cm.deptLevel != ''">
+                and t.DEPT_LEVEL = #{cm.deptLevel}
+            </if>
+            <if test="cm.deptType != null and cm.deptType != ''">
+                and t.DEPT_TYPE = #{cm.deptType}
+            </if>
+            <if test="cm.onTheJob != null and cm.onTheJob == 'Y'.toString()">
+                and (t.POST_TYPE = '1' or t.POST_TYPE = '2')
+            </if>
+            <if test="cm.postType != null and cm.postType != ''">
+                and t.POST_TYPE = #{cm.postType}
+            </if>
+            <if test="cm.parentId != null and cm.parentId != ''">
+                and t.PARENT_ID = #{cm.parentId}
+            </if>
+            <if test="cm.province != null and cm.province != ''">
+                and t.PROVINCE = #{cm.province}
+            </if>
+            <if test="cm.city != null and cm.city != ''">
+                and t.CITY = #{cm.city}
+            </if>
+            <if test="cm.counties != null and cm.counties != ''">
+                and t.COUNTIES = #{cm.counties}
+            </if>
+            <if test="cm.avatar != null and cm.avatar != ''">
+                and t.AVATAR = #{cm.avatar}
+            </if>
+            <if test="cm.passwordPlain != null and cm.passwordPlain != ''">
+                and t.PASSWORD_PLAIN = #{cm.passwordPlain}
+            </if>
+            <if test="cm.trainRange != null and cm.trainRange != ''">
+                and t.TRAIN_RANGE = #{cm.trainRange}
+            </if>
+            <if test="cm.mobilePhone != null and cm.mobilePhone != ''">
+                and t.MOBILE_PHONE = #{cm.mobilePhone}
+            </if>
+            <if test="cm.email != null and cm.email != ''">
+                and t.EMAIL = #{cm.email}
+            </if>
+            <if test="cm.parentDeptId != null and cm.parentDeptId != ''">
+                and t.PARENT_DEPT_ID = #{cm.parentDeptId}
+            </if>
+            <if test="cm.mainDeptId != null and cm.mainDeptId != ''">
+                and t.MAIN_DEPT_ID = #{cm.mainDeptId}
+            </if>
+            <if test="cm.wechatId != null and cm.wechatId != ''">
+                and t.WECHAT_ID = #{cm.wechatId}
+            </if>
+            <if test="cm.wechatNickname != null and cm.wechatNickname != ''">
+                and t.WECHAT_NICKNAME = #{cm.wechatNickname}
+            </if>
+            <if test="cm.gdhrPaperworkNo != null and cm.gdhrPaperworkNo != ''">
+                and t.GDHR_PAPERWORK_NO = #{cm.gdhrPaperworkNo}
+            </if>
+            <if test="cm.deptTypeSeq != null and cm.deptTypeSeq != ''">
+                and t.DEPT_TYPE_SEQ = #{cm.deptTypeSeq}
+            </if>
+            <if test="cm.isLock != null and cm.isLock != ''">
+                and t.is_lock = #{cm.isLock}
+            </if>
+            <if test="cm.isNotExistsTrainRegister != null and cm.isNotExistsTrainRegister == 'Y'.toString()">
+                and not exists (select 1 from TRAIN_REGISTER tr where tr.USER_ID=t.ID and tr.TRAIN_ID=#{cm.trainId} and tr.IS_DELETED='N' and ((tr.REGISTER_RESULT='regis' and tr.STATE='pass') or tr.STATE='auditing'))
+            </if>
+            <if test="cm.isExistsTrainRegion != null and cm.isExistsTrainRegion == 'Y'.toString()">
+                and exists (select 1 from TRAIN_REGION tr where t.PROVINCE=tr.PROVINCE and t.CITY=tr.CITY and (t.COUNTIES=tr.COUNTIES or tr.COUNTIES is NULL)
+                and tr.TRAIN_ID=#{cm.trainId} and tr.IS_DELETED='N')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询单条记录，用于灵活编写复杂SQL, 如子查询、关联查询等，如果是模块简单只需要单表，则调用mybatis plus自带的selectById -->
+    <select id="selectByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        <include refid="BaseSelectSql" />
+        <include refid="BaseWhereSql" />
+        order by t.id
+    </select>
+
+    <select id="selectByMap1" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        t.ID, t.USER_NAME, t.PASSWORD, t.ROLE_CODE, t.USER_ROLE,
+        t.PAPERWORK_NO, t.REAL_NAME, t.SEX, t.DEPT_ID, t.DEPT_NAME,
+        t.DEPT_LEVEL, t.DEPT_TYPE, t.PARENT_ID, t.PROVINCE, t.CITY,
+        t.COUNTIES, t.AVATAR, t.PASSWORD_PLAIN, t.TRAIN_RANGE, t.MOBILE_PHONE,
+        t.EMAIL, t.CREATE_TIME, t.CREATE_USER, t.UPDATE_USER, t.UPDATE_TIME,
+        t.IS_DELETED, t.VERSION, t.PARENT_DEPT_ID, t.MAIN_DEPT_ID, t.WECHAT_ID,
+        t.WECHAT_NICKNAME, t.GDHR_PAPERWORK_NO, t.DEPT_TYPE_SEQ,t.IS_LOCK
+        from USERVIEW t
+        where t.is_deleted='N'
+        <!--<if test="id != null and id != ''">
+            and t.ID = #{id,jdbcType=VARCHAR}
+        </if>-->
+        <if test="userName != null and userName != ''">
+            and t.USER_NAME = #{userName,jdbcType=VARCHAR}
+        </if>
+        <if test="password != null and password != ''">
+            and t.PASSWORD = #{password,jdbcType=VARCHAR}
+        </if>
+        <if test="roleCode != null and roleCode != ''">
+            and t.ROLE_CODE = #{roleCode,jdbcType=DECIMAL}
+        </if>
+        <if test="userRole != null and userRole != ''">
+            and t.USER_ROLE = #{userRole,jdbcType=VARCHAR}
+        </if>
+        <if test="paperworkNo != null and paperworkNo != ''">
+            and t.PAPERWORK_NO = #{paperworkNo,jdbcType=VARCHAR}
+        </if>
+        <if test="realName != null and realName != ''">
+            and t.REAL_NAME = #{realName,jdbcType=NVARCHAR}
+        </if>
+        <if test="sex != null and sex != ''">
+            and t.SEX = #{sex,jdbcType=VARCHAR}
+        </if>
+        <if test="deptId != null and deptId != ''">
+            and t.DEPT_ID = #{deptId,jdbcType=VARCHAR}
+        </if>
+        <if test="deptName != null and deptName != ''">
+            and t.DEPT_NAME = #{deptName,jdbcType=VARCHAR}
+        </if>
+        <if test="deptLevel != null and deptLevel != ''">
+            and t.DEPT_LEVEL = #{deptLevel,jdbcType=DECIMAL}
+        </if>
+        <if test="deptType != null and deptType != ''">
+            and t.DEPT_TYPE = #{deptType,jdbcType=VARCHAR}
+        </if>
+        <if test="parentId != null and parentId != ''">
+            and t.PARENT_ID = #{parentId,jdbcType=VARCHAR}
+        </if>
+        <if test="province != null and province != ''">
+            and t.PROVINCE = #{province,jdbcType=VARCHAR}
+        </if>
+        <if test="city != null and city != ''">
+            and t.CITY = #{city,jdbcType=VARCHAR}
+        </if>
+        <if test="counties != null and counties != ''">
+            and t.COUNTIES = #{counties,jdbcType=VARCHAR}
+        </if>
+        <if test="avatar != null and avatar != ''">
+            and t.AVATAR = #{avatar,jdbcType=VARCHAR}
+        </if>
+        <if test="passwordPlain != null and passwordPlain != ''">
+            and t.PASSWORD_PLAIN = #{passwordPlain,jdbcType=VARCHAR}
+        </if>
+        <if test="trainRange != null and trainRange != ''">
+            and t.TRAIN_RANGE = #{trainRange,jdbcType=VARCHAR}
+        </if>
+        <if test="mobilePhone != null and mobilePhone != ''">
+            and t.MOBILE_PHONE = #{mobilePhone,jdbcType=VARCHAR}
+        </if>
+        <if test="email != null and email != ''">
+            and t.EMAIL = #{email,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            and t.CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="parentDeptId != null and parentDeptId != ''">
+            and t.PARENT_DEPT_ID = #{parentDeptId,jdbcType=VARCHAR}
+        </if>
+        <if test="mainDeptId != null and mainDeptId != ''">
+            and t.MAIN_DEPT_ID = #{mainDeptId,jdbcType=VARCHAR}
+        </if>
+        <if test="wechatId != null and wechatId != ''">
+            and t.WECHAT_ID = #{wechatId,jdbcType=VARCHAR}
+        </if>
+        <if test="wechatNickname != null and wechatNickname != ''">
+            and t.WECHAT_NICKNAME = #{wechatNickname,jdbcType=VARCHAR}
+        </if>
+        <if test="gdhrPaperworkNo != null and gdhrPaperworkNo != ''">
+            and t.GDHR_PAPERWORK_NO = #{gdhrPaperworkNo,jdbcType=VARCHAR}
+        </if>
+        <if test="deptTypeSeq != null and deptTypeSeq != ''">
+            and t.DEPT_TYPE_SEQ = #{deptTypeSeq,jdbcType=VARCHAR}
+        </if>
+        order by t.id
+    </select>
+
+    <select id="selectUserViewByWechatId" parameterType="java.lang.String" resultMap="LoginUser">
+        SELECT *
+        FROM USERVIEW
+        WHERE WECHAT_ID = #{wechatId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectUserViewByAccount" parameterType="java.lang.String" resultMap="LoginUser">
+        SELECT *
+        FROM USERVIEW
+        WHERE (USER_NAME = #{userName,jdbcType=VARCHAR} or PAPERWORK_NO = upper(#{userName,jdbcType=VARCHAR}))
+    </select>
+
+    <select id="selectLoginUserByTransfer" parameterType="java.lang.String" resultMap="Transfer">
+        SELECT (SELECT IE.DEPT_NAME FROM IPANTHER_DEPARTMENT IE WHERE IUT.OUT_DEPT_ID = IE.ID) OUT_DEPT,
+               (SELECT IE.DEPT_NAME FROM IPANTHER_DEPARTMENT IE WHERE IUT.IN_DEPT_ID = IE.ID)  IN_DEPT
+        FROM IPANTHER_USER IU
+                     JOIN IPANTHER_USER_TRANSFER IUT ON IU.ID = IUT.USER_ID
+        WHERE IUT.IS_TRANSFERED = 'N'
+          AND IU.IS_DELETED = 'N'
+          AND (IU.USER_NAME = #{userName,jdbcType=VARCHAR} or upper(IU.PAPERWORK_NO) = upper(#{userName,jdbcType=VARCHAR}))
+    </select>
+    <update id="updateLockStatus" parameterType="com.haoyu.framework.modules.auth.entity.LoginUser">
+        update IPANTHER_USER
+        set UPDATE_USER          = #{updateUser,jdbcType=VARCHAR},
+            UPDATE_TIME        = #{updateTime,jdbcType=TIMESTAMP},
+            VERSION            = VERSION + 1,
+            IS_LOCK            = #{isLock,jdbcType=VARCHAR}
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>

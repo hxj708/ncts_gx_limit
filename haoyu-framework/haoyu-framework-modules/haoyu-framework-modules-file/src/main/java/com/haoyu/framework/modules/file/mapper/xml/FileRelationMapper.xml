@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.file.mapper.FileRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.file.entity.FileRelation">
+        <result column="ID" property="id" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="VERSION" property="version" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="FILE_ID" property="fileId" />
+        <result column="RELATION_ID" property="relationId" />
+        <result column="TYPE" property="type" />
+        <result column="DOWNLOAD_NUM" property="downloadNum" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID,
+        CREATE_USER,
+        CREATE_TIME,
+        UPDATE_USER,
+        UPDATE_TIME,
+        VERSION,
+        IS_DELETED,
+        FILE_ID, RELATION_ID, TYPE, DOWNLOAD_NUM
+    </sql>
+
+
+    <sql id="BaseSelectSql">
+        select
+        t.ID,t.CREATE_USER,t.CREATE_TIME,t.UPDATE_USER,t.UPDATE_TIME,t.VERSION,t.IS_DELETED
+        ,t.FILE_ID,t.RELATION_ID,t.TYPE,t.DOWNLOAD_NUM
+        from file_relation t
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.IS_DELETED = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.IS_DELETED = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.ID in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.fileId != null and cm.fileId != ''">
+                and t.FILE_ID = #{cm.fileId}
+            </if>
+            <if test="cm.relationId != null and cm.relationId != ''">
+                and t.RELATION_ID = #{cm.relationId}
+            </if>
+            <if test="cm.type != null and cm.type != ''">
+                and t.TYPE = #{cm.type}
+            </if>
+            <if test="cm.downloadNum != null and cm.downloadNum != ''">
+                and t.DOWNLOAD_NUM = #{cm.downloadNum}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        <include refid="BaseSelectSql" />
+        <include refid="BaseWhereSql" />
+    </select>
+</mapper>

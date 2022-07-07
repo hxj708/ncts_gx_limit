@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="txManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="*query*" read-only="false" />
+            <tx:method name="*get*" read-only="false" />
+            <tx:method name="*search*" read-only="false" />
+            <tx:method name="*list*" read-only="false" />
+            <tx:method name="*find*" read-only="false" />
+            <tx:method name="*init*" read-only="false" />
+            <tx:method name="*create*" read-only="false" propagation="NESTED" />
+            <tx:method name="*update*" read-only="false" propagation="NESTED" />
+            <tx:method name="*save*" read-only="false" propagation="NESTED" />
+            <tx:method name="*add*" read-only="false" />
+            <tx:method name="*edit*" read-only="false" />
+            <tx:method name="*import*" read-only="false" />
+            <tx:method name="*remove*" read-only="false" />
+            <tx:method name="*delete*" read-only="false" />
+            <tx:method name="*insert*" read-only="false" />
+            <tx:method name="*submit*" read-only="false" />
+            <tx:method name="*check*" read-only="false" />
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="allManagerMethod" expression="execution(* com.haoyu..*Service*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="allManagerMethod" order="0"/>
+    </aop:config>
+
+</beans>

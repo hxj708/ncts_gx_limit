@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyu.framework.modules.auth.mapper.UserRoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.haoyu.framework.modules.auth.entity.UserRole">
+        <result column="ID" property="id" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="VERSION" property="version" />
+        <result column="USER_ID" property="userId" />
+        <result column="ROLE_ID" property="roleId" />
+    </resultMap>
+
+    <resultMap id="selectUserWithRoleResultMap" type="java.util.Map">
+        <result column="ID" property="id" />
+        <result column="create_user" property="createUser" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="version" property="version" />
+        <result column="USER_NAME" property="userName" />
+        <result column="PASSWORD" property="password" />
+        <result column="ROLE_CODE" property="roleCode" />
+        <result column="USER_ROLE" property="userRole" />
+        <result column="PAPERWORK_NO" property="paperworkNo" />
+        <result column="REAL_NAME" property="realName" />
+        <result column="SEX" property="sex" />
+        <result column="DEPT_ID" property="deptId" />
+        <result column="DEPT_NAME" property="deptName" />
+        <result column="DEPT_LEVEL" property="deptLevel" />
+        <result column="DEPT_TYPE" property="deptType" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="PROVINCE" property="province" />
+        <result column="CITY" property="city" />
+        <result column="COUNTIES" property="counties" />
+        <result column="AVATAR" property="avatar" />
+        <result column="PASSWORD_PLAIN" property="passwordPlain" />
+        <result column="TRAIN_RANGE" property="trainRange" />
+        <result column="MOBILE_PHONE" property="mobilePhone" />
+        <result column="EMAIL" property="email" />
+        <result column="PARENT_DEPT_ID" property="parentDeptId" />
+        <result column="MAIN_DEPT_ID" property="mainDeptId" />
+        <result column="WECHAT_ID" property="wechatId" />
+        <result column="WECHAT_NICKNAME" property="wechatNickname" />
+        <result column="GDHR_PAPERWORK_NO" property="gdhrPaperworkNo" />
+        <result column="DEPT_TYPE_SEQ" property="deptTypeSeq" />
+        <result column="is_lock" property="isLock" />
+        <result column="ROLE_INFO" property="roleInfo"/>
+    </resultMap>
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID,
+        CREATE_USER,
+        CREATE_TIME,
+        UPDATE_USER,
+        UPDATE_TIME,
+        IS_DELETED,
+        VERSION,
+        USER_ID, ROLE_ID
+    </sql>
+
+
+    <sql id="BaseSelectSql">
+        select
+        t.ID,t.CREATE_USER,t.CREATE_TIME,t.UPDATE_USER,t.UPDATE_TIME,t.IS_DELETED,t.VERSION
+        ,t.USER_ID,t.ROLE_ID
+        from ipanther_user_role t
+    </sql>
+
+    <sql id="BaseWhereSql">
+        <where>
+            <choose>
+                <when test="cm.isDeleted != null and cm.isDeleted != ''">
+                    and t.IS_DELETED = #{cm.isDeleted}
+                </when>
+                <otherwise>
+                    and t.IS_DELETED = 'N'
+                </otherwise>
+            </choose>
+            <if test="cm.ids != null">
+                and t.ID in
+                <foreach collection="cm.ids" open="(" close=")" item="item" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cm.userId != null and cm.userId != ''">
+                and t.USER_ID = #{cm.userId}
+            </if>
+            <if test="cm.roleId != null and cm.roleId != ''">
+                and t.ROLE_ID = #{cm.roleId}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询单条记录，用于灵活编写复杂SQL, 如子查询、关联查询等，如果是模块简单只需要单表，则调用mybatis plus自带的selectById -->
+    <select id="selectByEntityId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="BaseSelectSql" />
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        <include refid="BaseSelectSql" />
+        <include refid="BaseWhereSql" />
+        order by t.id
+    </select>
+
+    <select id="selectUserWithRole" resultMap="selectUserWithRoleResultMap" parameterType="java.lang.String">
+        select t.id,
+            t.USER_NAME,t.ROLE_CODE,t.USER_ROLE,t.PAPERWORK_NO,t.REAL_NAME,t.SEX,t.AVATAR,t.MOBILE_PHONE,t.EMAIL,
+            t.WECHAT_ID,t.WECHAT_NICKNAME,t.GDHR_PAPERWORK_NO,t.IS_LOCK,
+            ide.id DEPT_ID,ide.DEPT_NAME,ide.DEPT_LEVEL,ide.DEPT_TYPE,ide.PARENT_ID,ide.PROVINCE,ide.CITY,ide.COUNTIES,
+            ide.TRAIN_RANGE,ide.PARENT_DEPT_ID,ide.MAIN_DEPT_ID,ide.DEPT_TYPE_SEQ
+            ,(SELECT CONCAT(group_concat(ir.id ORDER BY ir.id ASC),'|',group_concat(ir.name ORDER BY ir.id ASC))
+                from ipanther_role ir join ipanther_user_role iur on ir.id=iur.role_id and iur.is_deleted='N'
+                where ir.is_deleted='N' and iur.user_id = t.id
+                ) role_info
+        from ipanther_user t
+        left join ipanther_user_dept iud on iud.user_id = t.id and iud.is_deleted='N'
+        left join ipanther_department ide on iud.dept_id = ide.id and ide.is_deleted='N'
+        where t.is_deleted='N'
+        <if test="cm.userId != null and cm.userId != ''">
+            and t.id = #{cm.userId}
+        </if>
+        <if test="cm.userName != null and cm.userName != ''">
+            and t.USER_NAME like concat(concat('%',#{cm.userName}),'%')
+        </if>
+        <if test="cm.password != null and cm.password != ''">
+            and t.PASSWORD = #{cm.password}
+        </if>
+        <if test="cm.roleCode != null and cm.roleCode != ''">
+            and t.ROLE_CODE = #{cm.roleCode}
+        </if>
+        <if test="cm.userRole != null and cm.userRole != ''">
+            and t.USER_ROLE = #{cm.userRole}
+        </if>
+        <if test="cm.paperworkNo != null and cm.paperworkNo != ''">
+            and t.PAPERWORK_NO like concat(concat('%',#{cm.paperworkNo}),'%')
+        </if>
+        <if test="cm.realName != null and cm.realName != ''">
+            and t.REAL_NAME like concat(concat('%',#{cm.realName}),'%')
+        </if>
+        <if test="cm.sex != null and cm.sex != ''">
+            and t.SEX = #{cm.sex}
+        </if>
+        <if test="cm.deptId != null and cm.deptId != ''">
+            and t.DEPT_ID = #{cm.deptId}
+        </if>
+        <if test="cm.deptName != null and cm.deptName != ''">
+            and ide.DEPT_NAME like concat(concat('%',#{cm.deptName}),'%')
+        </if>
+        <if test="cm.deptLevel != null and cm.deptLevel != ''">
+            and ide.DEPT_LEVEL = #{cm.deptLevel}
+        </if>
+        <if test="cm.deptType != null and cm.deptType != ''">
+            and ide.DEPT_TYPE = #{cm.deptType}
+        </if>
+        <if test="cm.parentId != null and cm.parentId != ''">
+            and ide.PARENT_ID = #{cm.parentId}
+        </if>
+        <if test="cm.province != null and cm.province != ''">
+            and ide.PROVINCE = #{cm.province}
+        </if>
+        <if test="cm.city != null and cm.city != ''">
+            and ide.CITY = #{cm.city}
+        </if>
+        <if test="cm.counties != null and cm.counties != ''">
+            and ide.COUNTIES = #{cm.counties}
+        </if>
+        <if test="cm.avatar != null and cm.avatar != ''">
+            and t.AVATAR = #{cm.avatar}
+        </if>
+        <if test="cm.passwordPlain != null and cm.passwordPlain != ''">
+            and t.PASSWORD_PLAIN = #{cm.passwordPlain}
+        </if>
+        <if test="cm.trainRange != null and cm.trainRange != ''">
+            and t.TRAIN_RANGE = #{cm.trainRange}
+        </if>
+        <if test="cm.mobilePhone != null and cm.mobilePhone != ''">
+            and t.MOBILE_PHONE = #{cm.mobilePhone}
+        </if>
+        <if test="cm.email != null and cm.email != ''">
+            and t.EMAIL = #{cm.email}
+        </if>
+        <if test="cm.parentDeptId != null and cm.parentDeptId != ''">
+            and t.PARENT_DEPT_ID = #{cm.parentDeptId}
+        </if>
+        <if test="cm.mainDeptId != null and cm.mainDeptId != ''">
+            and t.MAIN_DEPT_ID = #{cm.mainDeptId}
+        </if>
+        <if test="cm.wechatId != null and cm.wechatId != ''">
+            and t.WECHAT_ID = #{cm.wechatId}
+        </if>
+        <if test="cm.wechatNickname != null and cm.wechatNickname != ''">
+            and t.WECHAT_NICKNAME = #{cm.wechatNickname}
+        </if>
+        <if test="cm.gdhrPaperworkNo != null and cm.gdhrPaperworkNo != ''">
+            and t.GDHR_PAPERWORK_NO = #{cm.gdhrPaperworkNo}
+        </if>
+        <if test="cm.deptTypeSeq != null and cm.deptTypeSeq != ''">
+            and t.DEPT_TYPE_SEQ = #{cm.deptTypeSeq}
+        </if>
+        <if test="cm.isLock != null and cm.isLock != ''">
+            and t.is_lock = #{cm.isLock}
+        </if>
+        order by t.id
+    </select>
+
+    <update id="deleteByUserId" parameterType="java.lang.String">
+        DELETE
+        FROM IPANTHER_USER_ROLE
+        where USER_ID = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="deleteByRoleId" parameterType="java.lang.String">
+        DELETE
+        FROM IPANTHER_USER_ROLE
+        where ROLE_ID = #{roleId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteByUserRole" parameterType="com.haoyu.framework.modules.auth.entity.UserRole">
+        DELETE
+        FROM IPANTHER_USER_ROLE
+        where USER_ID = #{userId,jdbcType=VARCHAR}
+          and ROLE_ID = #{roleId,jdbcType=VARCHAR}
+    </delete>
+</mapper>
